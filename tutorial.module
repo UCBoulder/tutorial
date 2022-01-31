@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Tutorial module code.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function tutorial_field_widget_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+  $field_defininition = $context['items']
+    ->getFieldDefinition();
+  $field_name = method_exists($field_defininition, 'id') ? $field_defininition->id() : NULL;
+  if ($field_name == 'node.tutorial.field_tut_body_image') {
+    $element['#attached']['library'][] = 'tutorial/tutorial';
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "oit/tutorial",
+  "type": "drupal-custom-module",
+  "description": "Create step shortcode and display correctly on tutorial nodes",
+  "keywords": ["Drupal"],
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://github.com/UCBoulder/tutorial",
+  "minimum-stability": "dev"
+}
