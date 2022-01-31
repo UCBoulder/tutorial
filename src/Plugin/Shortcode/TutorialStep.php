@@ -46,17 +46,27 @@ class TutorialStep extends ShortcodeBase {
         if ($img_file) {
           $uri = $img_file->getFileUri();
           $image_full = Url::fromUri(file_create_url($uri))->toString();
-          $image_medium = ImageStyle::load('medium')->buildUrl($uri);
-          $image_small = ImageStyle::load('tutorial_small')->buildUrl($uri);
-          $image_thumb = ImageStyle::load('thumbnail')->buildUrl($uri);
+          $image_medium = ImageStyle::load('max_325x325')->buildUrl($uri);
           $img_html = sprintf(
-            '<a href="%s" class="blazy__colorbox litebox cboxElement" data-colorbox-trigger="">
-            <img class="b-lazy media__image media__element" data-src="%s" srcset="" data-srcset="%s 100w, %s 400w, %s" sizes="100w" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" typeof="foaf:Image" alt="%s"></a>',
-            $image_full,
-            $image_thumb,
-            $image_thumb,
+            '<a href="#img-%s">
+              <img src="%s" loading="lazy" width="325" height="325" alt="%s"></img>
+            </a>
+            <div id="img-%s" class="tut-modal-window">
+              <div>
+                <div class="header">
+                  <span>%s</span>
+                  <a href="#step-%s" title="Close" class="modal-close button">Close</a>
+                </div>
+                <img src="%s" alt="%s" loading="lazy"></img>
+              </div>
+            </div>',
+            $fid,
             $image_medium,
-            $image_small,
+            $alt,
+            $fid,
+            $alt,
+            $fid,
+            $image_full,
             $alt
           );
         }
@@ -66,13 +76,14 @@ class TutorialStep extends ShortcodeBase {
       }
     }
     $step = sprintf(
-    "<div class='tutorial-step flex-item flex-one-half'>
+    "<div id='step-%s' class='tutorial-step flex-item flex-one-half'>
       <h2 class='step'>%s</h2>
       <div class='step-inner'>
         <div class='step-text'>%s</div>
         <div class='prog-img'>%s</div>
       </div>
     </div>",
+    $fid,
     $this->t("Step"),
     $text,
     $img_html
