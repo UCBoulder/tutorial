@@ -47,9 +47,12 @@ class TutorialStep extends ShortcodeBase {
           $uri = $img_file->getFileUri();
           $image_full = Url::fromUri(file_create_url($uri))->toString();
           $image_medium = ImageStyle::load('max_325x325')->buildUrl($uri);
+          $pattern = '/^https?:\/\/.*?\/(.*?)\?(.*)/i';
+          $image_medium_short = preg_replace($pattern, '$1', $image_medium);
+          $image_medium_size = getimagesize($image_medium_short);
           $img_html = sprintf(
             '<a href="#img-%s">
-              <img src="%s" loading="lazy" width="325" height="325" alt="%s"></img>
+              <img src="%s" loading="lazy" %s alt="%s"></img>
             </a>
             <div id="img-%s" class="tut-modal-window">
               <div>
@@ -62,6 +65,7 @@ class TutorialStep extends ShortcodeBase {
             </div>',
             $fid,
             $image_medium,
+            $image_medium_size[3],
             $alt,
             $fid,
             $alt,
