@@ -55,14 +55,15 @@ class TutorialStep extends ShortcodeBase {
             $width = 325;
             $height = 325 * $ratio;
             $height = round($height, 0);
-          } else {
+          }
+          else {
             $ratio = $width / $height;
             $height = 325;
             $width = 325 * $ratio;
             $width = round($width, 0);
           }
           $icon = new ShortcodeIcon();
-          // Get svg icon path
+          // Get svg icon path.
           $icon = $icon->getSvg();
           $img_html = sprintf(
             '<a href="#img-%s">
