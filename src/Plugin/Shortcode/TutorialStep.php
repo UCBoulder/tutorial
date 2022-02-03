@@ -8,6 +8,7 @@ use Drupal\Core\Language\Language;
 use Drupal\shortcode\Plugin\ShortcodeBase;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Xss;
+use Drupal\shortcode_svg\Plugin\ShortcodeIcon;
 
 /**
  * Provides a shortcode for tutorial steps.
@@ -60,6 +61,9 @@ class TutorialStep extends ShortcodeBase {
             $width = 325 * $ratio;
             $width = round($width, 0);
           }
+          $icon = new ShortcodeIcon();
+          // Get svg icon path
+          $icon = $icon->getSvg();
           $img_html = sprintf(
             '<a href="#img-%s">
               <img src="%s" width="%s" height="%s" loading="lazy" alt="%s"></img>
@@ -68,7 +72,11 @@ class TutorialStep extends ShortcodeBase {
               <div>
                 <div class="header">
                   <span>%s</span>
-                  <a href="#step-%s" title="Close" class="modal-close button">Close</a>
+                  <a href="#step-%s" title="Close" class="modal-close">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34" class="svg-icon x-fat" width="20">
+                      <use fill="#fff" xlink:href="%s#x-fat"></use>
+                    </svg>
+                  </a>
                 </div>
                 <img src="%s" alt="%s" loading="lazy"></img>
               </div>
@@ -81,6 +89,7 @@ class TutorialStep extends ShortcodeBase {
             $fid,
             $alt,
             $fid,
+            $icon,
             $image_full,
             $alt
           );
