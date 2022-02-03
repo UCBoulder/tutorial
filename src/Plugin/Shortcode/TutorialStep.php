@@ -35,24 +35,34 @@ class TutorialStep extends ShortcodeBase {
 
     if ($fid !== NULL) {
       $connection = \Drupal::database();
-      $query = $connection->query("SELECT field_tut_body_image_alt FROM {node__field_tut_body_image} WHERE field_tut_body_image_target_id = :fid", [
+      $query = $connection->query("SELECT * FROM {node__field_tut_body_image} WHERE field_tut_body_image_target_id = :fid", [
         ':fid' => $fid,
       ]);
       $result = $query->fetchAssoc();
 
       if ($result) {
         $alt = $result['field_tut_body_image_alt'];
+        $width = $result['field_tut_body_image_width'];
+        $height = $result['field_tut_body_image_height'];
         $img_file = File::load($fid);
         if ($img_file) {
           $uri = $img_file->getFileUri();
           $image_full = Url::fromUri(file_create_url($uri))->toString();
           $image_medium = ImageStyle::load('max_325x325')->buildUrl($uri);
-          $pattern = '/^https?:\/\/.*?\/(.*?)\?(.*)/i';
-          $image_medium_short = preg_replace($pattern, '$1', $image_medium);
-          $image_medium_size = getimagesize($image_medium_short);
+          if ($width > $height) {
+            $ratio = $height / $width;
+            $width = 325;
+            $height = 325 * $ratio;
+            $height = round($height, 0);
+          } else {
+            $ratio = $width / $height;
+            $height = 325;
+            $width = 325 * $ratio;
+            $width = round($width, 0);
+          }
           $img_html = sprintf(
             '<a href="#img-%s">
-              <img src="%s" loading="lazy" %s alt="%s"></img>
+              <img src="%s" width="%s" height="%s" loading="lazy" alt="%s"></img>
             </a>
             <div id="img-%s" class="tut-modal-window">
               <div>
@@ -65,7 +75,8 @@ class TutorialStep extends ShortcodeBase {
             </div>',
             $fid,
             $image_medium,
-            $image_medium_size[3],
+            $width,
+            $height,
             $alt,
             $fid,
             $alt,
