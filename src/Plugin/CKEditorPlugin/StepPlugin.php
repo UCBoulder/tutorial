@@ -52,7 +52,7 @@ class StepPlugin extends PluginBase implements CKEditorPluginInterface, CKEditor
     return [
       'step' => [
         'label' => 'Add Step',
-        'image' => drupal_get_path('module', 'tutorial') . '/js/plugins/step/icons/step.png',
+        'image' => \Drupal::service('extension.list.module')->getPath('tutorial') . '/js/plugins/step/icons/step.png',
       ],
     ];
   }
@@ -61,7 +61,6 @@ class StepPlugin extends PluginBase implements CKEditorPluginInterface, CKEditor
    * {@inheritdoc}
    */
   public function getFile() {
-    return drupal_get_path('module', 'tutorial') . '/js/plugins/step/plugin.js';
+    return \Drupal::service('extension.list.module')->getPath('tutorial') . '/js/plugins/step/plugin.js';
   }
-
 }

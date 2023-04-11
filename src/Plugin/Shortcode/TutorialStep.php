@@ -25,9 +25,10 @@ class TutorialStep extends ShortcodeBase {
    * {@inheritdoc}
    */
   public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
-    $attributes = $this->getAttributes([
-      'fid'    => '',
-    ],
+    $attributes = $this->getAttributes(
+      [
+        'fid'    => '',
+      ],
       $attributes
     );
 
@@ -48,15 +49,14 @@ class TutorialStep extends ShortcodeBase {
         $img_file = File::load($fid);
         if ($img_file) {
           $uri = $img_file->getFileUri();
-          $image_full = Url::fromUri(file_create_url($uri))->toString();
+          $image_full = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('file_url_generator')->generateAbsoluteString($uri));
           $image_medium = ImageStyle::load('max_325x325')->buildUrl($uri);
           if ($width > $height) {
             $ratio = $height / $width;
             $width = 325;
             $height = 325 * $ratio;
             $height = round($height, 0);
-          }
-          else {
+          } else {
             $ratio = $width / $height;
             $height = 325;
             $width = 325 * $ratio;
@@ -94,24 +94,23 @@ class TutorialStep extends ShortcodeBase {
             $image_full,
             $alt
           );
-        }
-        else {
+        } else {
           $img_html = $this->t('Missing Image or incorrect fid set');
         }
       }
     }
     $step = sprintf(
-    "<div id='step-%s' class='tutorial-step flex-item flex-one-half'>
+      "<div id='step-%s' class='tutorial-step flex-item flex-one-half'>
       <h2 class='step'>%s</h2>
       <div class='step-inner'>
         <div class='step-text'>%s</div>
         <div class='prog-img'>%s</div>
       </div>
     </div>",
-    $fid,
-    $this->t("Step"),
-    $text,
-    $img_html
+      $fid,
+      $this->t("Step"),
+      $text,
+      $img_html
     );
     return $step;
   }
@@ -124,5 +123,4 @@ class TutorialStep extends ShortcodeBase {
     $output[] = '<p><strong>' . $this->t('[step fid="3"]Other HTML content here [/step]') . '</strong> ';
     return implode(' ', $output);
   }
-
 }
