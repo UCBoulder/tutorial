@@ -2,13 +2,16 @@
 
 namespace Drupal\tutorial\Plugin\Shortcode;
 
-use Drupal\Core\Url;
-use Drupal\file\Entity\File;
-use Drupal\Core\Language\Language;
-use Drupal\shortcode\Plugin\ShortcodeBase;
-use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\File\FileUrlGeneratorInterface;
+use Drupal\Core\Language\Language;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\file\Entity\File;
+use Drupal\image\Entity\ImageStyle;
+use Drupal\shortcode\Plugin\ShortcodeBase;
 use Drupal\shortcode_svg\Plugin\ShortcodeIcon;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a shortcode for tutorial steps.
@@ -20,6 +23,82 @@ use Drupal\shortcode_svg\Plugin\ShortcodeIcon;
  * )
  */
 class TutorialStep extends ShortcodeBase {
+
+  /**
+   * Run Database query.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $connection;
+
+  /**
+   * File Url Generator.
+   *
+   * @var \Drupal\Core\File\FileUrlGeneratorInterface
+   */
+  protected $fileUrlGenerator;
+
+  /**
+   * Call shortcode svg icon.
+   *
+   * @var \Drupal\shortcode_svg\Plugin\ShortcodeIcon
+   */
+  protected $shortcodeSvgIcon;
+
+  /**
+   * The renderer service.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * Constructs a new Shortcode plugin.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin ID for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer service.
+   * @param \Drupal\Core\Database\Connection $connection
+   *   Establish database connection.
+   * @param \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator
+   *   File URL generator.
+   * @param \Drupal\shortcode_svg\Plugin\ShortcodeIcon $shortcode_svg_icon
+   *   Call shortcode svg icon.
+   */
+  public function __construct(
+    array $configuration,
+          $plugin_id,
+          $plugin_definition,
+    RendererInterface $renderer,
+    Connection $connection,
+    FileUrlGeneratorInterface $file_url_generator,
+    ShortcodeIcon $shortcode_svg_icon
+  ) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $renderer);
+    $this->connection = $connection;
+    $this->fileUrlGenerator = $file_url_generator;
+    $this->shortcodeSvgIcon = $shortcode_svg_icon;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): self {
+    return new self(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('renderer'),
+      $container->get('database'),
+      $container->get('file_url_generator'),
+      $container->get('shortcode_svg.icon')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -36,7 +115,7 @@ class TutorialStep extends ShortcodeBase {
     $img_html = '';
 
     if ($fid !== NULL) {
-      $connection = \Drupal::database();
+      $connection = $this->connection;
       $query = $connection->query("SELECT * FROM {node__field_tut_body_image} WHERE field_tut_body_image_target_id = :fid", [
         ':fid' => $fid,
       ]);
@@ -49,20 +128,21 @@ class TutorialStep extends ShortcodeBase {
         $img_file = File::load($fid);
         if ($img_file) {
           $uri = $img_file->getFileUri();
-          $image_full = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('file_url_generator')->generateAbsoluteString($uri));
+          $image_full = $this->fileUrlGenerator->transformRelative($this->fileUrlGenerator->generateAbsoluteString($uri));
           $image_medium = ImageStyle::load('max_325x325')->buildUrl($uri);
           if ($width > $height) {
             $ratio = $height / $width;
             $width = 325;
             $height = 325 * $ratio;
             $height = round($height, 0);
-          } else {
+          }
+          else {
             $ratio = $width / $height;
             $height = 325;
             $width = 325 * $ratio;
             $width = round($width, 0);
           }
-          $icon = new ShortcodeIcon();
+          $icon = $this->shortcodeSvgIcon;
           // Get svg icon path.
           $icon = $icon->getSvg();
           $img_html = sprintf(
@@ -94,7 +174,8 @@ class TutorialStep extends ShortcodeBase {
             $image_full,
             $alt
           );
-        } else {
+        }
+        else {
           $img_html = $this->t('Missing Image or incorrect fid set');
         }
       }
@@ -123,4 +204,5 @@ class TutorialStep extends ShortcodeBase {
     $output[] = '<p><strong>' . $this->t('[step fid="3"]Other HTML content here [/step]') . '</strong> ';
     return implode(' ', $output);
   }
+
 }
