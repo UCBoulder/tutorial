@@ -72,12 +72,12 @@ class TutorialStep extends ShortcodeBase {
    */
   public function __construct(
     array $configuration,
-          $plugin_id,
-          $plugin_definition,
+    $plugin_id,
+    $plugin_definition,
     RendererInterface $renderer,
     Connection $connection,
     FileUrlGeneratorInterface $file_url_generator,
-    ShortcodeIcon $shortcode_svg_icon
+    ShortcodeIcon $shortcode_svg_icon,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $renderer);
     $this->connection = $connection;
