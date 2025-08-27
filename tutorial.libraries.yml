@@ -1,3 +1,6 @@
 tutorial:
   js:
     js/tutorial-node-form.js: {}
+  license:
+    name: 'GPL-2.0-or-later'
+    url: 'https://www.drupal.org/licensing/faq'

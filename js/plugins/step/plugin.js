@@ -15,7 +15,7 @@ CKEDITOR.plugins.add( 'step', {
                 var now = new Date();
 
                 // Insert the step into the document.
-                editor.insertHtml( "[step]Step Text[/step]" );
+                editor.insertHtml( "[step reset='false']Step Text[/step]" );
             }
         });
 

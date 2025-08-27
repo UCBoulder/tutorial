@@ -31,7 +31,7 @@ function copyFid(fid, step) {
   if (text === "") {
     text = 'Add Step Text Here';
   }
-  el.value = '[step fid="' + fid + '"]' + text + '[/step]';
+  el.value = '[step fid="' + fid + '" reset="FALSE"]' + text + '[/step]';
   el.setAttribute('readonly', '');
   el.style = {position: 'absolute', left: '-9999px'};
   document.body.appendChild(el);

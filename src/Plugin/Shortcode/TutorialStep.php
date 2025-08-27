@@ -107,9 +107,12 @@ class TutorialStep extends ShortcodeBase {
     $attributes = $this->getAttributes(
       [
         'fid'    => '',
+        'reset'  => FALSE,
       ],
       $attributes
     );
+
+    $reset = !empty($attributes['reset']) ? Xss::filter($attributes['reset']) : NULL;
 
     $fid = !empty($attributes['fid']) ? Xss::filter($attributes['fid']) : NULL;
     $img_html = '';
@@ -182,13 +185,14 @@ class TutorialStep extends ShortcodeBase {
     }
     $step = sprintf(
       "<div id='step-%s' class='tutorial-step flex-item flex-one-half'>
-      <h2 class='step'>%s</h2>
+      <h2 class='step' data-reset='%s'>%s</h2>
       <div class='step-inner'>
         <div class='step-text'>%s</div>
         <div class='prog-img'>%s</div>
       </div>
     </div>",
       $fid,
+      $reset,
       $this->t("Step"),
       $text,
       $img_html
@@ -201,7 +205,7 @@ class TutorialStep extends ShortcodeBase {
    */
   public function tips($long = FALSE) {
     $output = [];
-    $output[] = '<p><strong>' . $this->t('[step fid="3"]Other HTML content here [/step]') . '</strong> ';
+    $output[] = '<p><strong>' . $this->t('[step fid="3" reset]Other HTML content here [/step]') . '</strong> ';
     return implode(' ', $output);
   }
 
