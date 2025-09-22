@@ -53,6 +53,11 @@ class TutorialStep extends ShortcodeBase {
   protected $renderer;
 
   /**
+   * Iterate.
+   */
+  protected $i = 0;
+
+  /**
    * Constructs a new Shortcode plugin.
    *
    * @param array $configuration
@@ -112,7 +117,16 @@ class TutorialStep extends ShortcodeBase {
       $attributes
     );
 
+
     $reset = !empty($attributes['reset']) ? Xss::filter($attributes['reset']) : NULL;
+
+    if ($reset == "TRUE") {
+      $this->i = 1;
+    } else {
+      $this->i++;
+    }
+
+    $even_odd = ($this->i % 2 == 0) ? 'even' : 'odd';
 
     $fid = !empty($attributes['fid']) ? Xss::filter($attributes['fid']) : NULL;
     $img_html = '';
@@ -148,9 +162,10 @@ class TutorialStep extends ShortcodeBase {
           $icon = $this->shortcodeSvgIcon;
           // Get svg icon path.
           $icon = $icon->getSvg();
+
           $img_html = sprintf(
             '<a href="#img-%s">
-              <img src="%s" width="%s" height="%s" loading="lazy" alt="%s"></img>
+            <img src="%s" width="%s" height="%s" loading="lazy" alt="%s"></img>
             </a>
             <div id="img-%s" class="tut-modal-window">
               <div>
@@ -183,21 +198,27 @@ class TutorialStep extends ShortcodeBase {
         }
       }
     }
-    $step = sprintf(
-      "<div id='step-%s' class='tutorial-step flex-item flex-one-half'>
-      <h2 class='step' data-reset='%s'>%s</h2>
-      <div class='step-inner'>
-        <div class='step-text'>%s</div>
-        <div class='prog-img'>%s</div>
-      </div>
-    </div>",
-      $fid,
-      $reset,
-      $this->t("Step"),
-      $text,
-      $img_html
-    );
-    return $step;
+    $step['string'] = [
+      '#type' => 'inline_template',
+      '#template' => "
+        <div class='step-{{ increment }} tutorial-step flex-item flex-one-half {{ even_odd }}'>
+          <h2 class='step'>{{ step_text }} {{ step_increment }}</h2>
+          <div class='step-inner'>
+            <div class='step-text'>{{ text|raw }}</div>
+            <div class='prog-img'>{{ image|raw }}</div>
+          </div>
+        </div>",
+      '#context' => [
+        'increment' => $this->i,
+        'even_odd' => $even_odd,
+        'step_text' => $this->t('Step'),
+        'step_increment' => $this->i,
+        'text' => $text,
+        'image' => $img_html,
+      ],
+    ];
+
+    return $this->renderer->render($step);
   }
 
   /**
