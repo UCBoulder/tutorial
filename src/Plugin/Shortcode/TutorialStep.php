@@ -54,6 +54,8 @@ class TutorialStep extends ShortcodeBase {
 
   /**
    * Iterate.
+   *
+   * @var int
    */
   protected $i = 0;
 
@@ -117,12 +119,12 @@ class TutorialStep extends ShortcodeBase {
       $attributes
     );
 
-
     $reset = !empty($attributes['reset']) ? Xss::filter($attributes['reset']) : NULL;
 
     if ($reset == "TRUE") {
       $this->i = 1;
-    } else {
+    }
+    else {
       $this->i++;
     }
 
