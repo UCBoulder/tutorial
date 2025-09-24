@@ -60,6 +60,13 @@ class TutorialStep extends ShortcodeBase {
   protected $i = 0;
 
   /**
+   * Store steps text.
+   *
+   * @var array
+   */
+  protected $step = [];
+
+  /**
    * Constructs a new Shortcode plugin.
    *
    * @param array $configuration
@@ -123,10 +130,20 @@ class TutorialStep extends ShortcodeBase {
 
     if ($reset == "TRUE") {
       $this->i = 1;
+      $this->step = [];
     }
     else {
       $this->i++;
     }
+
+    // For reasons I don't understand, some nodes repeat the same step
+    // before the node and then the step count is wrong. This is a workaround.
+    if (in_array($text, $this->step)) {
+      $this->step = [];
+      $this->i = 1;
+    }
+
+    $this->step[] = $text;
 
     $even_odd = ($this->i % 2 == 0) ? 'even' : 'odd';
 
