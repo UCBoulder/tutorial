@@ -165,35 +165,17 @@ class TutorialStep extends ShortcodeBase {
           // Get svg icon path.
           $icon = $icon->getSvg();
 
-          $img_html = sprintf(
-            '<a href="#img-%s">
-            <img src="%s" width="%s" height="%s" loading="lazy" alt="%s"></img>
-            </a>
-            <div id="img-%s" class="tut-modal-window">
-              <div>
-                <div class="header">
-                  <span>%s</span>
-                  <a href="#step-%s" title="Close" class="modal-close">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34" class="svg-icon x-fat" width="20">
-                      <use fill="#fff" xlink:href="%s#x-fat"></use>
-                    </svg>
-                  </a>
-                </div>
-                <img src="%s" alt="%s" loading="lazy"></img>
-              </div>
-            </div>',
-            $fid,
-            $image_medium,
-            $width,
-            $height,
-            $alt,
-            $fid,
-            $alt,
-            $fid,
-            $icon,
-            $image_full,
-            $alt
-          );
+          $img_html = [
+            '#theme' => 'tutorial_step_image',
+            '#fid' => $fid,
+            '#image_medium' => $image_medium,
+            '#image_full' => $image_full,
+            '#width' => $width,
+            '#height' => $height,
+            '#alt' => $alt,
+            '#icon' => $icon,
+          ];
+          $img_html = $this->renderer->render($img_html);
         }
         else {
           $img_html = $this->t('Missing Image or incorrect fid set');

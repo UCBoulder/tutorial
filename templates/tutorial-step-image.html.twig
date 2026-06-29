@@ -1,0 +1,32 @@
+{#
+/**
+ * @file
+ * Default theme implementation for a tutorial step image.
+ *
+ * Available variables:
+ * - fid: The file ID of the image, used to build modal anchor links.
+ * - image_medium: URL for the medium (thumbnail) image style.
+ * - image_full: URL for the full-size image shown in the modal.
+ * - width: Calculated thumbnail width.
+ * - height: Calculated thumbnail height.
+ * - alt: Alternative text for the image.
+ * - icon: Path to the SVG sprite used for the close icon.
+ *
+ * @ingroup themeable
+ */
+#}
+<a href="#img-{{ fid }}">
+  <img src="{{ image_medium }}" width="{{ width }}" height="{{ height }}" loading="lazy" alt="{{ alt }}">
+</a>
+<div id="img-{{ fid }}" class="tut-modal-window">
+  <div>
+    <div class="header">
+      <a href="#step-{{ fid }}" title="Close" class="modal-close">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34" class="svg-icon x-fat" width="20">
+          <use fill="#fff" xlink:href="{{ icon }}#x-fat"></use>
+        </svg>
+      </a>
+    </div>
+    <img src="{{ image_full }}" alt="{{ alt }}" loading="lazy">
+  </div>
+</div>
