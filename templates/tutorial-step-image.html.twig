@@ -10,7 +10,8 @@
  * - width: Calculated thumbnail width.
  * - height: Calculated thumbnail height.
  * - alt: Alternative text for the image.
- * - icon: Path to the SVG sprite used for the close icon.
+ * - icon: Rendered markup for the close icon, built via
+ *   ShortcodeIcon::setIcon().
  *
  * @ingroup themeable
  */
@@ -22,9 +23,7 @@
   <div>
     <div class="header">
       <a href="#step-{{ fid }}" title="Close" class="modal-close">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 34 34" class="svg-icon x-fat" width="20">
-          <use fill="#fff" xlink:href="{{ icon }}#x-fat"></use>
-        </svg>
+        {{ icon|raw }}
       </a>
     </div>
     <img src="{{ image_full }}" alt="{{ alt }}" loading="lazy">
