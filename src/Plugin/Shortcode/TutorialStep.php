@@ -5,52 +5,24 @@ namespace Drupal\tutorial\Plugin\Shortcode;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\File\FileUrlGeneratorInterface;
-use Drupal\Core\Language\Language;
+use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\shortcode\Attribute\Shortcode;
 use Drupal\shortcode\Plugin\ShortcodeBase;
-use Drupal\shortcode_svg\Plugin\ShortcodeIcon;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\shortcode_svg\ShortcodeIcon;
 
 /**
  * Provides a shortcode for tutorial steps.
- *
- * @Shortcode(
- *   id = "step",
- *   title = @Translation("Tutorial"),
- *   description = @Translation("Shortcode for adding steps to Tutorials")
- * )
  */
+#[Shortcode(
+  id: 'step',
+  title: new TranslatableMarkup('Tutorial'),
+  description: new TranslatableMarkup('Shortcode for adding steps to Tutorials'),
+)]
 class TutorialStep extends ShortcodeBase {
-
-  /**
-   * Run Database query.
-   *
-   * @var \Drupal\Core\Database\Connection
-   */
-  protected $connection;
-
-  /**
-   * File Url Generator.
-   *
-   * @var \Drupal\Core\File\FileUrlGeneratorInterface
-   */
-  protected $fileUrlGenerator;
-
-  /**
-   * Call shortcode svg icon.
-   *
-   * @var \Drupal\shortcode_svg\Plugin\ShortcodeIcon
-   */
-  protected $shortcodeSvgIcon;
-
-  /**
-   * The renderer service.
-   *
-   * @var \Drupal\Core\Render\RendererInterface
-   */
-  protected $renderer;
 
   /**
    * Iterate.
@@ -72,9 +44,9 @@ class TutorialStep extends ShortcodeBase {
    *   The renderer service.
    * @param \Drupal\Core\Database\Connection $connection
    *   Establish database connection.
-   * @param \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator
+   * @param \Drupal\Core\File\FileUrlGeneratorInterface $fileUrlGenerator
    *   File URL generator.
-   * @param \Drupal\shortcode_svg\Plugin\ShortcodeIcon $shortcode_svg_icon
+   * @param \Drupal\shortcode_svg\ShortcodeIcon $shortcodeSvgIcon
    *   Call shortcode svg icon.
    */
   public function __construct(
@@ -82,35 +54,18 @@ class TutorialStep extends ShortcodeBase {
     $plugin_id,
     $plugin_definition,
     RendererInterface $renderer,
-    Connection $connection,
-    FileUrlGeneratorInterface $file_url_generator,
-    ShortcodeIcon $shortcode_svg_icon,
+    protected Connection $connection,
+    protected FileUrlGeneratorInterface $fileUrlGenerator,
+    protected ShortcodeIcon $shortcodeSvgIcon,
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $renderer);
-    $this->connection = $connection;
-    $this->fileUrlGenerator = $file_url_generator;
-    $this->shortcodeSvgIcon = $shortcode_svg_icon;
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): self {
-    return new self(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('renderer'),
-      $container->get('database'),
-      $container->get('file_url_generator'),
-      $container->get('shortcode_svg.icon')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function process(array $attributes, $text, $langcode = Language::LANGCODE_NOT_SPECIFIED) {
+  #[\Override]
+  public function process(array $attributes, string $text, string $langcode = LanguageInterface::LANGCODE_NOT_SPECIFIED): string {
     $attributes = $this->getAttributes(
       [
         'fid'    => '',
@@ -162,8 +117,8 @@ class TutorialStep extends ShortcodeBase {
             $width = round($width, 0);
           }
           $icon = $this->shortcodeSvgIcon;
-          // Get svg icon path.
-          $icon = $icon->getSvg();
+          // Build the close icon markup for the modal window.
+          $icon_markup = $icon->setIcon('x-fat', '20', 'fff');
 
           $img_html = [
             '#theme' => 'tutorial_step_image',
@@ -173,9 +128,9 @@ class TutorialStep extends ShortcodeBase {
             '#width' => $width,
             '#height' => $height,
             '#alt' => $alt,
-            '#icon' => $icon,
+            '#icon' => $icon_markup,
           ];
-          $img_html = $this->renderer->render($img_html);
+          $img_html = $this->render($img_html);
         }
         else {
           $img_html = $this->t('Missing Image or incorrect fid set');
@@ -202,12 +157,13 @@ class TutorialStep extends ShortcodeBase {
       ],
     ];
 
-    return $this->renderer->render($step);
+    return $this->render($step);
   }
 
   /**
    * {@inheritdoc}
    */
+  #[\Override]
   public function tips($long = FALSE) {
     $output = [];
     $output[] = '<p><strong>' . $this->t('[step fid="3" reset]Other HTML content here [/step]') . '</strong> ';
