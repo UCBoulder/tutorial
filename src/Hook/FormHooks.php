@@ -14,6 +14,13 @@ class FormHooks {
    * Implements hook_field_widget_single_element_form_alter().
    *
    * Attaches the tutorial library to the tutorial body image widget.
+   *
+   * @param array<string, mixed> $element
+   *   The field widget form element.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   * @param array<string, mixed> $context
+   *   The widget context, including 'items' (the field item list).
    */
   #[Hook('field_widget_single_element_form_alter')]
   public function fieldWidgetSingleElementFormAlter(array &$element, FormStateInterface $form_state, array $context): void {

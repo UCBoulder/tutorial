@@ -11,6 +11,9 @@ class ThemeHooks {
 
   /**
    * Implements hook_theme().
+   *
+   * @return array<string, array<string, mixed>>
+   *   The theme registry definitions.
    */
   #[Hook('theme')]
   public function theme(): array {

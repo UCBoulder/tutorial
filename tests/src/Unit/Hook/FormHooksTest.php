@@ -22,6 +22,9 @@ class FormHooksTest extends UnitTestCase {
 
   /**
    * Builds a widget context for the given field identity.
+   *
+   * @return array<string, \Drupal\Core\Field\FieldItemListInterface<\Drupal\Core\Field\FieldItemInterface>>
+   *   The widget context array.
    */
   protected function buildContext(string $entity_type, ?string $bundle, string $field_name): array {
     $definition = $this->createMock(FieldDefinitionInterface::class);
@@ -55,6 +58,9 @@ class FormHooksTest extends UnitTestCase {
 
   /**
    * Data provider for testFieldWidgetSingleElementFormAlter().
+   *
+   * @return array<string, array{string, ?string, string, bool}>
+   *   Test cases keyed by description.
    */
   public static function providerFieldWidget(): array {
     return [

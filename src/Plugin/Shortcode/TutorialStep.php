@@ -34,7 +34,7 @@ class TutorialStep extends ShortcodeBase {
   /**
    * Constructs a new Shortcode plugin.
    *
-   * @param array $configuration
+   * @param array<string, mixed> $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
    *   The plugin ID for the plugin instance.
@@ -62,7 +62,17 @@ class TutorialStep extends ShortcodeBase {
   }
 
   /**
-   * {@inheritdoc}
+   * Processes the tutorial step shortcode.
+   *
+   * @param array<string, mixed> $attributes
+   *   The shortcode attributes.
+   * @param string $text
+   *   The content enclosed by the shortcode.
+   * @param string $langcode
+   *   The language code of the text being processed.
+   *
+   * @return string
+   *   The rendered shortcode output.
    */
   #[\Override]
   public function process(array $attributes, string $text, string $langcode = LanguageInterface::LANGCODE_NOT_SPECIFIED): string {
